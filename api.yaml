@@ -1,0 +1,201 @@
+openapi: 3.1.0
+info:
+  title: Forma Health OpenAPI Spec
+  description: >-
+    This API should be allow the ios and android frontends to connect to the ruby backend
+  version: 1.0.0
+servers:
+  - url: https://api-web-a7ya.onrender.com/api/v1
+tags:
+  - name: Test
+    description: okta test api call
+    externalDocs:
+        description: Find out more
+        url: https://www.formahealth.io/
+  - name: Care Teams
+    description: groups including one patient and optional caregivers
+  - name: Topics
+    description: define what events are tracked and what is collected for each
+  - name: Observations
+    description: represent an event associated with a topic
+paths:
+  /test:
+    get:
+      tags:
+        - Test
+      summary: Test whether okta login is functional
+      responses:
+        '200': 
+          description: success
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestSuccess'
+        '401': 
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - token_auth: []
+  /care_teams:
+    get:
+      tags:
+        - Care Teams
+      summary: Get the current user's list of care teams
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/CareTeam'
+        '401': 
+          $ref: '#/components/responses/Unauthorized'
+components:
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TestFailure'
+  schemas:
+    User:
+      type: object
+      properties:
+        id: 
+          type: string
+          examples: [asd98f76as8dfads6af986sdf897ad6y7tfa]
+        first_name:
+          type: string
+          examples: [Murray]
+        last_name:
+          type: string
+          examples: [Kornelsen]
+        role: 
+          type: string
+          examples: [Patient]
+        symbol:
+          $ref: '#/components/schemas/Symbol'
+    CareTeam:
+      type: object
+      properties:
+        id:
+          type: string
+          examples: [a9sd87fa9sd8a98fa9sd8fa9]  
+        patient:
+          $ref: '#/components/schemas/User'
+        studies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Study'
+        topics:
+          type: array
+          items:
+            $ref: '#/components/schemas/Topic'
+        configs:
+          type: array
+          items:
+            type: object
+            properties:
+              id: 
+                type: string
+              effective_date:
+                type: string
+                format: date-time
+              version: 
+                type: integer
+              change_reason:
+                type: string
+            examples:
+              - id: 198231987298as89df7a98fd7aa98d
+                effective_date: 1900-01-01T00:00:00.000Z
+                version: "1.0"
+                change_reason: Initial version
+              - id: z98xcvz98xc7v89z7v
+                effective_date: 2024-01-01T00:00:00.000Z
+                version: "2.0"
+                change_reason: Updated seizures topic
+    Topic:
+      type: object
+      properties:
+        id: 
+          type: string
+          examples: [a0sd7f6a980sdf698a7s6f0a897dfa]
+        care_team_config_id:
+          type: string
+          examples: [198231987298as89df7a98fd7aa98d]
+        title: 
+          type: string
+          examples: [Seizures]
+        
+    Study:
+      type: object
+      properties:
+        id:
+          type: string
+          examples: [679z8x76cv8976z89g6z98s7df690sd67dfa]
+        name: 
+          type: string
+          examples: [Seizures]
+    Symbol:
+      type: object
+      properties:
+        style:
+          type: string
+          examples: [text, sfSymbol, emoji, photoLibrary, camera]
+        paletteSwatch:
+          type: string
+          examples: [red, blue, yellow]
+        opacity:
+          type: number
+          format: double
+          examples: [1.0]
+        valueText: 
+          type: string
+          examples: [Aa]
+        valueEmoji:
+          type: string
+          examples: [😀]
+        valueSFSymbol:
+          type: string
+          examples: [arrow.right]
+        valueImage: 
+          type: string
+          examples: [abc.png]
+        valueImageColorHex:
+          type: string
+          examples: ["0x3456789A"]
+    TestSuccess:
+      type: object
+      properties: 
+        test: 
+          type: string
+          examples: [success]
+        okta_uid: 
+          type: string
+          examples: [as907fhoh41ofh]
+    TestFailure:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                examples: [unauthorized]
+              status:
+                type: integer
+                format: int32
+                examples: [401]
+              detail:
+                type: string
+                examples: [Authorization is required]
+      
+  securitySchemes:
+    token_auth:
+      type: http
+      scheme: bearer
+      
