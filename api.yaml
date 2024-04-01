@@ -20,6 +20,8 @@ tags:
     description: represent an event associated with a topic
   - name: Medications
     description: medications can be considered a special case of topics/observations but are handled separately by the front end
+  - name: Patients
+    description: patients
 paths:
   /test:
     get:
@@ -221,6 +223,13 @@ paths:
           $ref: '#/components/responses/Unauthorized'
       security:
         - token_auth: []
+  /patients:
+    post:
+      tags: 
+        - Patients
+      parameters:
+        - in: body
+
 components:
   responses:
     Unauthorized:
@@ -230,6 +239,20 @@ components:
           schema:
             $ref: '#/components/schemas/TestFailure'
   schemas:
+    Patient:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        nickname: 
+          type: string
+        timezone:
+          type: integer
+          format: int32
     FreeformObservation:
       type: object
       properties:
