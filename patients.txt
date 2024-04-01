@@ -1,0 +1,106 @@
+api/v2/patients
+error:
+{
+    "errors": [
+    {
+      "title": "Unauthorized", 
+      "status": 401,
+      "detail": "Authorization is required"
+    }
+    ]
+}
+get:
+success (200)
+{
+    "data": [
+        {
+            "id": "h98ad798789sdf987978as",
+            "local_id": "asdf987gas89fg9ad8s7fa9s8df7",
+            "first_name": "Kim",
+            "last_name": "Abcouwer",
+            "nickname": "KA",
+            "timezone": "MDT",
+            "icon": {
+                ***symbol spec***
+            },
+            "updated_at": 192637129873, // UTC milliseconds
+            "care_team_members": [
+                {
+                    "id": "asdf98g7as98dgf7as89df",
+                    "local_id": "a9s8dg7as98df7a9sdf7asd98f7",
+                    "first_name": "Kim",
+                    "last_name": "Abcouwer",
+                    "nickname": "KA",
+                    "timezone": "MDT",
+                    "privileges": "admin", // admin, standard, edit, view
+                    "title": "parent",
+                    "icon": {
+                        ***symbol spec***
+                    }
+                },
+                {
+                    "id": "asd98gas9d8798af98",
+                    "local_id": "as98df7a89s7fa89sdfsd8af",
+                    "name": "Dr. Greg House",
+                    "title": "external doctor", // might need to hold this feature for later
+                    "icon": {
+                        ***symbol spec***
+                    }
+                }
+            ]
+        }
+    ],
+    "links": [
+
+    ]
+}
+
+post:
+request body:
+{
+    "role": "parent", // can be patient, parent, doctor, etc...
+    "patient": {
+        "local_id": "a98sd7f9a8sdf79asd7f",
+        "first_name": "Andy",
+        "last_name": "Pease",
+        "nickname": "AP",
+        "timezone": "EST",
+        "icon": {
+            ***symbol spec***
+        }
+    }
+}
+response: 202
+{
+    "id": "as9d8f7as89d7f",
+    "data": "success"
+}
+
+patch: 
+
+all fields optional (except local_id)
+request body:
+{
+    "patient": {
+        "local_id": "a98sd7f9a8sdf79asd7f",
+        "first_name": "Andy",
+        "last_name": "Pease",
+        "nickname": "AP",
+        "timezone": "EST",
+        "icon": {
+            ***symbol spec***
+        }
+    }
+}
+response: 202
+{
+    "data": "success"
+}
+
+/api/v2/care_team_members
+
+post:
+{
+    "patient_id": "ad908sdf798af89asd9f",
+}
+
