@@ -1,0 +1,426 @@
+openapi: 3.1.0
+info:
+  title: Forma Health API Spec
+  description: |
+    REST API providing management for user accounts, roles, patient and caregiver profiles, along with topics and clinical studies. Additionally, it facilitates the processing of voice-to-text observations through an advanced Language Model (LLM), structuring them into OMOP (Observational Medical Outcomes Partnership) compliant data for seamless integration and analysis.
+  version: 1.0.0
+servers:
+  - url: https://server-url/v1
+tags:
+  - name: Test
+    description: Test API call for CORS - returns success if Okta access token is valid
+    externalDocs:
+        description: Find out more
+        url: https://www.formahealth.io/
+  - name: Patients
+    description: Patients are users who are the subject of observations
+paths:
+  /v1/test:
+    get:
+      tags:
+        - Test
+      summary: Test Okta access token
+      responses:
+        '200': 
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Test'
+              example:
+                success: true
+                message: 'Access Token validated'
+                data:
+                  okta_uid: 'example_okta_uid'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/patients:
+    get:
+      tags:
+        - Patients
+      summary: Get all patients for user
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  succuss:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Patient'
+                  links:
+                    $ref: '#/components/schemas/Links'
+              example:
+                success: true
+                data:
+                  - id: 'example_id'
+                    local_id: 'example_local_id'
+                    first_name: 'Tina'
+                    last_name: 'Belcher'
+                    nickname: 'T-Bird'
+                    timezone: 'EST'
+                    updated_at: 1725090120
+                    icon:
+                      style: text
+                      palette_swatch: red
+                      value_text: 'example_value_text'
+                      value_emoji: 'example_value_emoji'
+                      value_sf_symbol: 'example_value_sf_symbol'
+                links:
+                  self: 'string'
+                  first: 'string'
+                  previous: 'string'
+                  next: 'string'
+                  last: 'string'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+        - Patients
+      summary: Create a new patient
+      requestBody:
+        $ref: '#/components/requestBodies/NewPatient'
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message: 
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      local_id:
+                        type: string
+              example:
+                success: true
+                message: 'Patient created successfully'
+                data:
+                  local_id: 'example_local_id'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/patients/{local_id}:
+    get:
+      tags:
+        - Patients
+      summary: Get a patient by ID
+      parameters:
+        - in: path
+          name: local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to retrieve
+      responses:
+        '200':
+          description: Retrieves detailed information about a specific patient by their ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Patient'
+              example:
+                success: true
+                data:
+                  id: 'example_id'
+                  local_id: 'example_local_id'
+                  first_name: 'Tina'
+                  last_name: 'Belcher'
+                  nickname: 'T-Bird'
+                  timezone: 'EST'
+                  updated_at: 1725090120
+                  icon:
+                    style: text
+                    palette_swatch: red
+                    value_text: 'example_value_text'
+                    value_emoji: 'example_value_emoji'
+                    value_sf_symbol: 'example_value_sf_symbol'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Patients
+      summary: Update a patient by ID
+      parameters:
+        - in: path
+          name: local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to update
+      requestBody:
+        $ref: '#/components/requestBodies/UpdatePatient'
+      responses:
+        '200':
+          description: Updates a patient by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Patient'
+              example:
+                success: true
+                message: 'Patient updated successfully'
+                data:
+                  id: 'example_id'
+                  local_id: 'example_local_id'
+                  first_name: 'Tina'
+                  last_name: 'Belcher'
+                  nickname: 'T-Bird'
+                  timezone: 'EST'
+                  updated_at: 1725090120
+                  icon:
+                    style: text
+                    palette_swatch: red
+                    value_text: 'example_value_text'
+                    value_emoji: 'example_value_emoji'
+                    value_sf_symbol: 'example_value_sf_symbol'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Patients
+      summary: Delete a patient by ID
+      parameters:
+        - in: path
+          name: local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to delete
+      responses:
+        '200':
+          description: Deletes a patient by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+              example:
+                success: true
+                message: 'Patient deleted successfully'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            errors:
+              - title: 'Unauthorized'
+                status: 401
+                detail: 'Authorization is required'
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            errors:
+              - title: 'Bad Request'
+                status: 401
+                detail: ''
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              errors:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            errors:
+              - title: 'Record not found'
+                status: 404
+                detail: 'We could not find the object you were looking for'
+  requestBodies:
+    NewPatient:
+      description: A JSON object containing patient information and current user information
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              role:
+                type: object
+                properties:
+                  okta_uid:
+                    type: string
+                  title:
+                    type: string                  
+              patient:
+                type: object
+                schema:
+                  $ref: '#/components/schemas/Patient'
+          example:
+            role:
+              okta_uid: 'example_okta_uid'
+              title: 'example_title'
+            patient:
+              local_id: 'example_local_id'
+              first_name: 'John'
+              last_name: 'Smith'
+              nickname: 'JS'
+              timezone: 'MST'
+              icon:
+                style: 'text'
+                palette_swatch: red
+                value_text: 'example_value_text'
+                value_emoji: 'example_value_emoji'
+                value_sf_symbol: 'example_value_sf_symbol'
+    UpdatePatient:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              role:
+                type: object
+                properties:
+                  okta_uid:
+                    type: string
+                  title:
+                    type: string
+              patient:
+                type: object
+                schema:
+                  $ref: '#/components/schemas/Patient'
+          example:
+            patient:
+              timezone: 'PST'
+              icon:
+                style: 'emoji'
+                palette_swatch: blue
+                value_emoji: 'example_value_emoji'
+  schemas:
+    Test:
+      type: object
+      properties:
+        okta_uid:
+          type: string
+    Patient:
+      type: object
+      properties:
+        id:
+          type: string
+        local_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        nickname: 
+          type: string
+        timezone:
+          type: string
+        updated_at:
+          type: integer
+          format: int64 UTC Milliseconds
+        icon:
+          $ref: '#/components/schemas/Icon'
+    Icon:
+      type: object
+      properties:
+        style:
+          type: string
+        palette_swatch:
+          type: string
+        value_text:
+          type: string
+        value_emoji:
+          type: string
+        value_sf_symbol:
+          type: string
+    Links:
+      type: object
+      properties:
+        self: 
+          type: string
+        first:
+          type: string
+        prev:
+          type: string
+        next:
+          type: string
+        last:
+          type: string
+    Error:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+security:
+  - bearerAuth: []
