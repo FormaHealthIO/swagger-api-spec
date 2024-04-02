@@ -1,0 +1,338 @@
+openapi: 3.1.0
+info:
+  title: Forma Health OpenAPI Spec
+  description: >-
+    This API should be allow the ios and android frontends to connect to the ruby backend
+  version: 2.0.0
+servers:
+  - url: https://server-url/api/v2
+tags:
+  - name: Test
+    description: okta test api call
+    externalDocs:
+        description: Find out more
+        url: https://www.formahealth.io/
+  - name: Patients
+    description: The patient is the one whose healthcare needs (topics) are tracked. Patient may or may not have a Forma Health account. May have multiple care team members with various viewing/editing permissions.
+  - name: Care Teams
+    description: groups including one patient and optional caregivers
+  - name: Topics
+    description: define what events are tracked and what is collected for each
+  - name: Observations
+    description: represent an event associated with a topic
+  - name: Medications
+    description: medications can be considered a special case of topics/observations but are handled separately by the front end
+
+paths:
+  /test:
+    get:
+      tags:
+        - Test
+      summary: Test whether okta login is functional
+      responses:
+        '200': 
+          description: success
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestSuccess'
+        '401': 
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - token_auth: []
+  /patients:
+    get:
+      tags:
+        - Patients
+      summary: Get patients associated with the signed in user
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Patient'
+                  links:
+                    $ref: '#/components/schemas/Links'
+    post:
+      tags:
+        - Patients
+      summary: Create a new patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: 
+                  type: string
+                patient:
+                  type: object
+                  properties:
+                    local_id: 
+                      type: string
+                    first_name: 
+                      type: string
+                    last_name:
+                      type: string
+                    nickname:
+                      type: string
+                    timezone: 
+                      type: string
+                    icon:
+                      $ref: '#/components/schemas/Symbol'
+            examples:
+              create:
+                description: example of creating patient for self
+                value:
+                  title: patient
+                  patient:
+                    local_id: a9sd8g7a89g7a897g98as
+                    first_name: Murray
+                    last_name: Kornelsen
+                    nickname: murko
+                    timezone: PDT
+                    icon:
+                      style: text
+                      paletteSwatch: blue
+                      valueText: MK
+      responses: 
+        '201':
+          description: success
+
+    patch:
+      tags:
+        - Patients
+      summary: Update an existing patient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patient:
+                  type: object
+                  properties:
+                    local_id: 
+                      type: string
+                    updated_at: 
+                      type: integer
+                      format: int64 UTC Milliseconds
+                    first_name: 
+                      type: string
+                    last_name:
+                      type: string
+                    nickname: 
+                      type: string
+                    timezone:
+                      type: string
+                    icon:
+                      $ref: '#/components/schemas/Symbol'
+            examples:
+              update: 
+                description: update previously created user
+                value:
+                  local_id: a9sd8g7a89g7a897g98as
+                  updated_at: 1712036264040
+                  nickname: MK
+                  icon:
+                    style: camera
+                    valueImage: 12346789.png
+                
+      responses:
+        '202':
+          description: success
+
+components:
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TestFailure'
+  schemas:
+
+    Patient:
+      type: object
+      properties:
+        id:
+          type: string
+        local_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        nickname: 
+          type: string
+        timezone:
+          type: string
+        icon:
+          $ref: '#/components/schemas/Symbol'
+        updated_at:
+          type: integer
+          format: int64 UTC Milliseconds
+        care_team_members: 
+          type: array
+          items:
+            $ref: '#/components/schemas/CareTeamMember'
+
+      examples:
+        - id: as9dg7as98dfg7a9sd7f89as7dfasd
+          local_id: lkjghdfskagh9daf89978sdyfa9
+          first_name: Murray
+          last_name: Kornelsen
+          nickname: murko
+          timezone: PDT
+          icon:
+            style: text
+            paletteSwatch: blue
+            valueText: MK
+          updated_at: 1712036264039
+
+          care_team_members:
+            - id: as9dg7as98dfg7a9sd7f89as7dfasd
+              local_id: lkjghdfskagh9daf89978sdyfa9
+              first_name: Murray 
+              last_name: Kornelsen
+              nickname: murko
+              timezone: PDT
+              privileges: admin
+              title: patient
+              icon:
+                style: text
+                paletteSwatch: blue
+                valueText: MK
+              
+            - id: a9sd8f7a98sdf79as8df
+              local_id: 908afh897sdf98h7f98h7sdfh89s
+              first_name: Greg
+              last_name: House
+              nickname: G
+              timezone: EST
+              privileges: view
+              title: doctor
+              icon:
+                style: camera
+                paletteSwatch: red
+                valueImage: house.png
+
+    CareTeamMember:
+      type: object
+      properties:
+        id:
+          type: string
+        local_id: 
+          type: string
+        first_name: 
+          type: string
+        last_name: 
+          type: string
+        nickname: 
+          type: string
+        timezone: 
+          type: string
+        privileges:
+          type: string
+          enum: [admin, standard, edit, view]
+        title: 
+          type: string
+          enum: [patient, doctor, parent, caregiver, researcher]
+        icon:
+          $ref: '#/components/schemas/Symbol'
+        
+    Symbol:
+      type: object
+      properties:
+        style:
+          type: string
+          examples: [emoji]
+          enum:
+            - text
+            - sfSymbol
+            - emoji
+            - photoLibrary
+            - camera
+        paletteSwatch:
+          type: string
+          examples: [red]
+        opacity:
+          type: number
+          format: double
+          examples: [1.0]
+        valueText: 
+          type: string
+          examples: [Aa]
+        valueEmoji:
+          type: string
+          examples: [😀]
+        valueSFSymbol:
+          type: string
+          examples: [arrow.right]
+        valueImage: 
+          type: string
+          examples: [abc.png]
+        valueImageColorHex:
+          type: string
+          examples: ["0x3456789A"]
+
+    Links:
+      type: object
+      properties:
+        self: 
+          type: string
+          examples: [https://api-web-a7ya.onrender.com/api/v1/patients]
+        first:
+          type: string
+          examples: [https://api-web-a7ya.onrender.com/api/v1/patients]
+        prev:
+          type: string
+          examples: [https://api-web-a7ya.onrender.com/api/v1/patients]
+        next:
+          type: string
+          examples: [https://api-web-a7ya.onrender.com/api/v1/patients]
+        last:
+          type: string
+          examples: [https://api-web-a7ya.onrender.com/api/v1/patients]
+
+    TestSuccess:
+      type: object
+      properties: 
+        test: 
+          type: string
+          examples: [success]
+        okta_uid: 
+          type: string
+          examples: [as907fhoh41ofh]
+
+    TestFailure:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+                examples: [unauthorized]
+              status:
+                type: integer
+                format: int32
+                examples: [401]
+              detail:
+                type: string
+                examples: [Authorization is required]
+
+  securitySchemes:
+    token_auth:
+      type: http
+      scheme: bearer

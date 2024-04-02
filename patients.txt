@@ -58,7 +58,7 @@ success (200)
 post:
 request body:
 {
-    "role": "parent", // can be patient, parent, doctor, etc...
+    "title": "parent", // can be patient, parent, doctor, etc...
     "patient": {
         "local_id": "a98sd7f9a8sdf79asd7f",
         "first_name": "Andy",
