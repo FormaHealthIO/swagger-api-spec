@@ -250,22 +250,39 @@ components:
                 type: object
                 schema:
                   $ref: '#/components/schemas/Patient'
-          example:
-            role:
-              okta_uid: example_okta_uid
-              title: patient
-            patient:
-              local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-              first_name: John
-              last_name: Smith
-              nickname: JS
-              timezone: MST
-              icon:
-                style: text
-                palette_swatch: red
-                value_text: example_value_text
-                value_emoji: example_value_emoji
-                value_sf_symbol: example_value_sf_symbol
+          examples:
+            add patient for caregiver:
+              value:
+                role:
+                  okta_uid: example_okta_uid
+                  title: nurse
+                patient:
+                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  first_name: John
+                  last_name: Smith
+                  nickname: JS
+                  timezone: MST
+                  icon:
+                    style: text
+                    palette_swatch: red
+                    value_text: example_value_text
+                    value_emoji: example_value_emoji
+                    value_sf_symbol: example_value_sf_symbol
+            add self as patient:
+              value:
+                role:
+                  okta_uid: example_okta_uid
+                  title: patient
+                patient:
+                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  nickname: JD
+                  timezone: Mountain Standard Time (MST)
+                  icon:
+                    style: text
+                    palette_swatch: red
+                    value_text: example_value_text
+                    value_emoji: example_value_emoji
+                    value_sf_symbol: example_value_sf_symbol
     UpdatePatient:
       content:
         application/json:
@@ -469,4 +486,3 @@ components:
                 value_sf_symbol: example_value_sf_symbol
 security:
   - bearerAuth: []
-  
