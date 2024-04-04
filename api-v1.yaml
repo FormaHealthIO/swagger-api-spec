@@ -27,11 +27,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Test'
-              example:
-                success: true
-                message: 'Access Token validated'
-                data:
-                  okta_uid: 'example_okta_uid'
+              examples:
+                TestExample:
+                  $ref: '#/components/examples/TestExample'
         '401':
           $ref: '#/components/responses/Unauthorized'
   /v1/patients:
@@ -47,36 +45,15 @@ paths:
               schema:
                 type: object
                 properties:
-                  succuss:
-                    type: boolean
                   data:
                     type: array
                     items:
                       $ref: '#/components/schemas/Patient'
-                  links:
-                    $ref: '#/components/schemas/Links'
-              example:
-                success: true
-                data:
-                  - id: 'example_id'
-                    local_id: 'example_local_id'
-                    first_name: 'Tina'
-                    last_name: 'Belcher'
-                    nickname: 'T-Bird'
-                    timezone: 'EST'
-                    updated_at: 1725090120
-                    icon:
-                      style: text
-                      palette_swatch: red
-                      value_text: 'example_value_text'
-                      value_emoji: 'example_value_emoji'
-                      value_sf_symbol: 'example_value_sf_symbol'
-                links:
-                  self: 'string'
-                  first: 'string'
-                  previous: 'string'
-                  next: 'string'
-                  last: 'string'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              examples:
+                GetPatientsExample:
+                  $ref: '#/components/examples/GetPatientsExample'
         '401':
           $ref: '#/components/responses/Unauthorized'
     post:
@@ -93,8 +70,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
                   message: 
                     type: string
                   data:
@@ -103,7 +78,6 @@ paths:
                       local_id:
                         type: string
               example:
-                success: true
                 message: 'Patient created successfully'
                 data:
                   local_id: 'example_local_id'
@@ -131,28 +105,13 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
                   data:
                     type: object
                     schema:
                       $ref: '#/components/schemas/Patient'
-              example:
-                success: true
-                data:
-                  id: 'example_id'
-                  local_id: 'example_local_id'
-                  first_name: 'Tina'
-                  last_name: 'Belcher'
-                  nickname: 'T-Bird'
-                  timezone: 'EST'
-                  updated_at: 1725090120
-                  icon:
-                    style: text
-                    palette_swatch: red
-                    value_text: 'example_value_text'
-                    value_emoji: 'example_value_emoji'
-                    value_sf_symbol: 'example_value_sf_symbol'
+              examples:
+                GetPatientExample:
+                  $ref: '#/components/examples/GetPatientExample'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -178,31 +137,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
                   message:
                     type: string
-                  data:
-                    type: object
-                    schema:
-                      $ref: '#/components/schemas/Patient'
               example:
-                success: true
                 message: 'Patient updated successfully'
-                data:
-                  id: 'example_id'
-                  local_id: 'example_local_id'
-                  first_name: 'Tina'
-                  last_name: 'Belcher'
-                  nickname: 'T-Bird'
-                  timezone: 'EST'
-                  updated_at: 1725090120
-                  icon:
-                    style: text
-                    palette_swatch: red
-                    value_text: 'example_value_text'
-                    value_emoji: 'example_value_emoji'
-                    value_sf_symbol: 'example_value_sf_symbol'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -226,12 +164,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    type: boolean
                   message:
                     type: string
               example:
-                success: true
                 message: 'Patient deleted successfully'
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -251,14 +186,11 @@ components:
           schema:
             type: object
             properties:
-              success:
-                type: boolean
               errors:
                 type: array
                 items:
                   $ref: '#/components/schemas/Error'
           example:
-            success: false
             errors:
               - title: 'Unauthorized'
                 status: 401
@@ -289,14 +221,11 @@ components:
           schema:
             type: object
             properties:
-              success:
-                type: boolean
               errors:
                 type: array
                 items:
                   $ref: '#/components/schemas/Error'
           example:
-            success: false
             errors:
               - title: 'Record not found'
                 status: 404
@@ -323,20 +252,20 @@ components:
                   $ref: '#/components/schemas/Patient'
           example:
             role:
-              okta_uid: 'example_okta_uid'
-              title: 'example_title'
+              okta_uid: example_okta_uid
+              title: patient
             patient:
-              local_id: 'example_local_id'
-              first_name: 'John'
-              last_name: 'Smith'
-              nickname: 'JS'
-              timezone: 'MST'
+              local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+              first_name: John
+              last_name: Smith
+              nickname: JS
+              timezone: MST
               icon:
-                style: 'text'
+                style: text
                 palette_swatch: red
-                value_text: 'example_value_text'
-                value_emoji: 'example_value_emoji'
-                value_sf_symbol: 'example_value_sf_symbol'
+                value_text: example_value_text
+                value_emoji: example_value_emoji
+                value_sf_symbol: example_value_sf_symbol
     UpdatePatient:
       content:
         application/json:
@@ -356,15 +285,19 @@ components:
                   $ref: '#/components/schemas/Patient'
           example:
             patient:
-              timezone: 'PST'
+              timezone: PST
               icon:
-                style: 'emoji'
+                style: emoji
                 palette_swatch: blue
-                value_emoji: 'example_value_emoji'
+                value_emoji: example_value_emoji
   schemas:
     Test:
       type: object
       properties:
+        success:
+          type: boolean
+        message:
+          type: string
         okta_uid:
           type: string
     Patient:
@@ -387,6 +320,10 @@ components:
           format: int64 UTC Milliseconds
         icon:
           $ref: '#/components/schemas/Icon'
+        caregivers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Caregiver'
     Icon:
       type: object
       properties:
@@ -400,19 +337,39 @@ components:
           type: string
         value_sf_symbol:
           type: string
-    Links:
+    Caregiver:
       type: object
       properties:
-        self: 
+        id:
           type: string
-        first:
+        local_id:
           type: string
-        prev:
+        first_name:
           type: string
-        next:
+        last_name:
           type: string
-        last:
+        nickname: 
           type: string
+        title:
+          type: string
+        updated_at:
+          type: integer
+          format: int64 UTC Milliseconds
+        icon:
+          $ref: '#/components/schemas/Icon'
+    Meta:
+      type: object
+      properties:
+        current_page: 
+          type: integer
+        next_page:
+          type: integer
+        prev_page:
+          type: integer
+        totol_pages:
+          type: integer
+        total_count:
+          type: integer
     Error:
       type: object
       properties:
@@ -422,5 +379,94 @@ components:
           type: integer
         detail:
           type: string
+  examples:
+    TestExample:
+      value:
+        success: true
+        message: 'Hello, Kim!'
+        data:
+          okta_uid: 'example_okta_uid'
+    IconExample:
+      value:
+        icon:
+          style: text
+          palette_swatch: red
+          value_text: example_value_text
+          value_emoji: example_value_emoji
+          value_sf_symbol: example_value_sf_symbol
+    GetPatientsExample:
+      value:
+        data:
+          - id: 38734022-af86-473c-8a9a-be7671c9c1fc
+            local_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+            first_name: Jessica
+            last_name: White
+            nickname: JW
+            timezone: Mountain Standard Time (MST)
+            updated_at: 1712270287
+            icon:
+              style: text
+              palette_swatch: red
+              value_text: example_value_text
+              value_emoji: example_value_emoji
+              value_sf_symbol: example_value_sf_symbol
+            caregivers:
+              - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                local_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
+                first_name: Jack
+                last_name: Black
+                nickname: JB
+                title: caregiver
+                updated_at: 1712270288
+                icon:
+                  style: text
+                  palette_swatch: mint
+                  value_text: example_value_text
+                  value_emoji: example_value_emoji
+                  value_sf_symbol: example_value_sf_symbol
+              - id: 86efba48-0c19-4117-822a-8675f31fba82
+                local_id: 906bde4b-1994-4118-acbb-e4ccece9953a
+                first_name: Vicki
+                last_name: Dooley
+                nickname: OW
+                title: babysitter
+                icon: null
+        meta:
+          current_page: 1
+          next_page: null
+          prev_page: null
+          total_pages: 1
+          total_count: 2
+    GetPatientExample:
+      value:
+        data:
+          id: 38734022-af86-473c-8a9a-be7671c9c1fc
+          local_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+          first_name: Jessica
+          last_name: White
+          nickname: JW
+          timezone: Mountain Standard Time (MST)
+          updated_at: 1712270287
+          icon:
+            style: text
+            palette_swatch: red
+            value_text: example_value_text
+            value_emoji: example_value_emoji
+            value_sf_symbol: example_value_sf_symbol
+          caregivers:
+            - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+              local_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
+              first_name: Jack
+              last_name: Black
+              nickname: JB
+              title: doctor
+              updated_at: 1712270288
+              icon:
+                style: text
+                palette_swatch: mint
+                value_text: example_value_text
+                value_emoji: example_value_emoji
+                value_sf_symbol: example_value_sf_symbol
 security:
   - bearerAuth: []
+  
