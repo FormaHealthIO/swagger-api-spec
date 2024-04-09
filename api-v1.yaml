@@ -233,7 +233,7 @@ components:
                 type: object
                 schema:
                   $ref: '#/components/schemas/Patient'
-              patient_relationship_attributes:
+              patient_relationship:
                 type: object
                 title: string
           examples:
@@ -250,7 +250,7 @@ components:
                     value_text: example_value_text
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
-                patient_relationship_attributes:
+                patient_relationship:
                   title: nurse
             add self as patient:
               value:
@@ -265,7 +265,7 @@ components:
                     value_text: example_value_text
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
-                patient_relationship_attributes:
+                patient_relationship:
                   title: patient
     UpdatePatient:
       content:
@@ -277,7 +277,7 @@ components:
                 type: object
                 schema:
                   $ref: '#/components/schemas/Patient'
-              patient_relationship_attributes:
+              patient_relationship:
                 type: object
                 title: string
           example:
@@ -285,7 +285,7 @@ components:
               nickname: Nate
               icon_attributes:
                 palette_swatch: blue
-            patient_relationship_attributes:
+            patient_relationship:
               title: caregiver
   schemas:
     Test:
