@@ -222,8 +222,8 @@ components:
                 detail: We could not find the object you were looking for
   requestBodies:
     NewPatient:
-      description: A JSON object containing patient information and current user information
       required: true
+      description: A JSON object containing patient information and information about the users relationship to the patient
       content:
         application/json:
           schema:
@@ -235,7 +235,10 @@ components:
                   $ref: '#/components/schemas/Patient'
               patient_relationship:
                 type: object
-                title: string
+                properties:
+                  title:
+                    type: string
+                    format: enum
           examples:
             add patient:
               value:
@@ -252,6 +255,13 @@ components:
                     value_sf_symbol: example_value_sf_symbol
                 patient_relationship:
                   title: nurse
+            add patient without icon:
+              value:
+                patient:
+                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  nickname: JS
+                patient_relationship:
+                  title: caregiver
             add self as patient:
               value:
                 patient:
@@ -280,13 +290,24 @@ components:
               patient_relationship:
                 type: object
                 title: string
-          example:
-            patient:
-              nickname: Nate
-              icon_attributes:
-                palette_swatch: blue
-            patient_relationship:
-              title: caregiver
+          examples:
+            update patient:
+              value:
+                patient:
+                  nickname: Nate
+                  icon_attributes:
+                    palette_swatch: blue
+                patient_relationship:
+                  title: caregiver
+            update patient icon:
+              value:
+                patient:
+                  icon_attributes:
+                    palette_swatch: blue
+            update patient relationship to user:
+              value:
+                patient_relationship:
+                  title: partner
   schemas:
     Test:
       type: object
@@ -305,8 +326,10 @@ components:
       properties:
         id:
           type: string
+          format: uuid
         local_id:
           type: string
+          format: uuid
         first_name:
           type: string
         last_name:
@@ -322,39 +345,65 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Caregiver'
-    Icon:
-      type: object
-      properties:
-        style:
-          type: string
-        palette_swatch:
-          type: string
-        value_text:
-          type: string
-        value_emoji:
-          type: string
-        value_sf_symbol:
-          type: string
+      required:
+        - id
+        - local_id
     Caregiver:
       type: object
       properties:
         id:
           type: string
+          format: uuid
         local_id:
           type: string
+          format: uuid
         first_name:
           type: string
         last_name:
           type: string
         nickname: 
           type: string
-        title:
-          type: string
         updated_at:
           type: integer
           format: int64 UTC Milliseconds
         icon:
           $ref: '#/components/schemas/Icon'
+      required:
+        - id
+        - local_id
+    PatientRelationship:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          $ref: '#/components/schemas/Title'
+        privilege:
+          $ref: '#/components/schemas/Privilege'
+        patient:
+          $ref: '#/components/schemas/Patient'
+        relationshipable:
+          $ref: '#/components/schemas/Caregiver'
+      required:
+        - id
+        - title
+        - privilege
+        - patient
+        - relationshipable
+    Icon:
+      type: object
+      properties:
+        style:
+          $ref: '#/components/schemas/Style'
+        palette_swatch:
+          $ref: '#/components/schemas/PaletteSwatch'
+        value_text:
+          type: string
+        value_emoji:
+          type: string
+        value_sf_symbol:
+          type: string
     Meta:
       type: object
       properties:
@@ -377,6 +426,74 @@ components:
           type: integer
         detail:
           type: string
+    Title:
+      type: string
+      enum:
+        - caregiver
+        - patient
+        - nurse
+        - doctor
+        - physician_assistant
+        - nurse_practitioner
+        - medical_assistant
+        - surgeon
+        - pharmacist
+        - physical_therapist
+        - occupational_therapist
+        - speech_therapist
+        - psychiatrist
+        - psychologist
+        - nutritionist
+        - dentist
+        - optometrist
+        - spouse
+        - partner
+        - parent
+        - guardian
+        - sibling
+        - child
+        - nanny
+        - babysitter
+        - friend
+        - family_member
+        - social_worker
+        - case_manager
+        - coach
+        - teacher
+        - counselor
+        - other
+    Privilege:
+      type: string
+      enum:
+        - standard
+        - view
+        - edit
+        - admin
+    Style:
+      type: string
+      enum:
+        - text
+        - sf_symbol
+        - emoji
+        - photo_library
+        - camera
+    PaletteSwatch:
+      type: string
+      enum:
+        - red
+        - orange
+        - yellow
+        - green
+        - mint
+        - blue
+        - indigo
+        - purple
+        - pink
+        - teal
+        - white
+        - label
+        - symbol_tab
+        - disabled
   examples:
     TestExample:
       value:
@@ -433,7 +550,7 @@ components:
           next_page: null
           prev_page: null
           total_pages: 1
-          total_count: 2
+          total_count: 1
     GetPatientExample:
       value:
         data:
