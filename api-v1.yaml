@@ -73,7 +73,7 @@ paths:
                   message: 
                     type: string
               example:
-                message: 'Patient created successfully'
+                message: Patient created successfully
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -133,7 +133,7 @@ paths:
                   message:
                     type: string
               example:
-                message: 'Patient updated successfully'
+                message: Patient updated successfully
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -160,7 +160,7 @@ paths:
                   message:
                     type: string
               example:
-                message: 'Patient deleted successfully'
+                message: Patient deleted successfully
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -185,9 +185,9 @@ components:
                   $ref: '#/components/schemas/Error'
           example:
             errors:
-              - title: 'Unauthorized'
+              - title: Unauthorized
                 status: 401
-                detail: 'Authorization is required'
+                detail: Authorization is required
     BadRequest:
       description: Bad Request
       content:
@@ -195,18 +195,15 @@ components:
           schema:
             type: object
             properties:
-              success:
-                type: boolean
               errors:
                 type: array
                 items:
                   $ref: '#/components/schemas/Error'
           example:
-            success: false
             errors:
-              - title: 'Bad Request'
+              - title: Bad Request
                 status: 401
-                detail: ''
+                detail: Bad request. Please check your request and try again.
     NotFound:
       description: Not Found
       content:
@@ -220,9 +217,9 @@ components:
                   $ref: '#/components/schemas/Error'
           example:
             errors:
-              - title: 'Record not found'
+              - title: Record not found
                 status: 404
-                detail: 'We could not find the object you were looking for'
+                detail: We could not find the object you were looking for
   requestBodies:
     NewPatient:
       description: A JSON object containing patient information and current user information
@@ -298,8 +295,11 @@ components:
           type: boolean
         message:
           type: string
-        okta_uid:
-          type: string
+        data:
+          type: object
+          properties:
+            okta_uid:
+              type: string
     Patient:
       type: object
       properties:
@@ -381,9 +381,9 @@ components:
     TestExample:
       value:
         success: true
-        message: 'Hello, Kim!'
+        message: Hello, Kim!
         data:
-          okta_uid: 'example_okta_uid'
+          okta_uid: example_okta_uid
     IconExample:
       value:
         icon:
@@ -465,4 +465,3 @@ components:
                 value_sf_symbol: example_value_sf_symbol
 security:
   - bearerAuth: []
-  
