@@ -5,10 +5,10 @@ info:
     REST API providing management for user accounts, roles, patient and caregiver profiles, along with topics and clinical studies. Additionally, it facilitates the processing of voice-to-text observations through an advanced Language Model (LLM), structuring them into OMOP (Observational Medical Outcomes Partnership) compliant data for seamless integration and analysis.
   version: 1.0.0
 servers:
-  - url: https://server-url/v1
+  - url: https://api-omop-web.onrender.com
 tags:
   - name: Test
-    description: Test API call for CORS - returns success if Okta access token is valid
+    description: Test API call
     externalDocs:
         description: Find out more
         url: https://www.formahealth.io/
@@ -72,15 +72,8 @@ paths:
                 properties:
                   message: 
                     type: string
-                  data:
-                    type: object
-                    properties:
-                      local_id:
-                        type: string
               example:
                 message: 'Patient created successfully'
-                data:
-                  local_id: 'example_local_id'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -238,75 +231,65 @@ components:
         application/json:
           schema:
             type: object
-            properties:
-              role:
-                type: object
-                properties:
-                  okta_uid:
-                    type: string
-                  title:
-                    type: string                  
+            properties:                
               patient:
                 type: object
                 schema:
                   $ref: '#/components/schemas/Patient'
+              patient_relationship_attributes:
+                type: object
+                title: string
           examples:
-            add patient for caregiver:
+            add patient:
               value:
-                role:
-                  okta_uid: example_okta_uid
-                  title: nurse
                 patient:
                   local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
                   first_name: John
                   last_name: Smith
                   nickname: JS
-                  timezone: MST
-                  icon:
+                  icon_attributes:
                     style: text
                     palette_swatch: red
                     value_text: example_value_text
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
+                patient_relationship_attributes:
+                  title: nurse
             add self as patient:
               value:
-                role:
-                  okta_uid: example_okta_uid
-                  title: patient
                 patient:
                   local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-                  nickname: JD
-                  timezone: Mountain Standard Time (MST)
-                  icon:
+                  first_name: John
+                  last_name: Smith
+                  nickname: JS
+                  icon_attributes:
                     style: text
                     palette_swatch: red
                     value_text: example_value_text
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
+                patient_relationship_attributes:
+                  title: patient
     UpdatePatient:
       content:
         application/json:
           schema:
             type: object
             properties:
-              role:
-                type: object
-                properties:
-                  okta_uid:
-                    type: string
-                  title:
-                    type: string
               patient:
                 type: object
                 schema:
                   $ref: '#/components/schemas/Patient'
+              patient_relationship_attributes:
+                type: object
+                title: string
           example:
             patient:
-              timezone: PST
-              icon:
-                style: emoji
+              nickname: Nate
+              icon_attributes:
                 palette_swatch: blue
-                value_emoji: example_value_emoji
+            patient_relationship_attributes:
+              title: caregiver
   schemas:
     Test:
       type: object
@@ -329,8 +312,6 @@ components:
         last_name:
           type: string
         nickname: 
-          type: string
-        timezone:
           type: string
         updated_at:
           type: integer
@@ -419,7 +400,6 @@ components:
             first_name: Jessica
             last_name: White
             nickname: JW
-            timezone: Mountain Standard Time (MST)
             updated_at: 1712270287
             icon:
               style: text
@@ -462,7 +442,6 @@ components:
           first_name: Jessica
           last_name: White
           nickname: JW
-          timezone: Mountain Standard Time (MST)
           updated_at: 1712270287
           icon:
             style: text
@@ -486,3 +465,4 @@ components:
                 value_sf_symbol: example_value_sf_symbol
 security:
   - bearerAuth: []
+  
