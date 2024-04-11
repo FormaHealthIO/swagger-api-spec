@@ -231,14 +231,26 @@ components:
             properties:                
               patient:
                 type: object
-                schema:
-                  $ref: '#/components/schemas/Patient'
-              patient_relationship:
-                type: object
                 properties:
-                  title:
+                  local_id:
                     type: string
-                    format: enum
+                    format: uuid
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  nickname: 
+                    type: string
+                  icon_attributes:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Icon'
+                  patient_relationship_attributes:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        format: enum
           examples:
             add patient:
               value:
@@ -253,15 +265,15 @@ components:
                     value_text: example_value_text
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
-                patient_relationship:
-                  title: nurse
+                  patient_relationship_attributes:
+                    title: nurse
             add patient without icon:
               value:
                 patient:
                   local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
                   nickname: JS
-                patient_relationship:
-                  title: caregiver
+                  patient_relationship_attributes:
+                    title: caregiver
             add self as patient:
               value:
                 patient:
@@ -275,21 +287,36 @@ components:
                     value_text: example_value_text
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
-                patient_relationship:
-                  title: patient
+                  patient_relationship_attributes:
+                    title: patient
     UpdatePatient:
       content:
         application/json:
           schema:
             type: object
-            properties:
+            properties:                
               patient:
                 type: object
-                schema:
-                  $ref: '#/components/schemas/Patient'
-              patient_relationship:
-                type: object
-                title: string
+                properties:
+                  local_id:
+                    type: string
+                    format: uuid
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  nickname: 
+                    type: string
+                  icon_attributes:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Icon'
+                  patient_relationship_attributes:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        format: enum
           examples:
             update patient:
               value:
@@ -297,8 +324,8 @@ components:
                   nickname: Nate
                   icon_attributes:
                     palette_swatch: blue
-                patient_relationship:
-                  title: caregiver
+                  patient_relationship_attributes:
+                    title: caregiver
             update patient icon:
               value:
                 patient:
@@ -306,8 +333,9 @@ components:
                     palette_swatch: blue
             update patient relationship to user:
               value:
-                patient_relationship:
-                  title: partner
+                patient:
+                  patient_relationship_attributes:
+                    title: patient
   schemas:
     Test:
       type: object
