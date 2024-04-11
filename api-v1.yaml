@@ -14,6 +14,8 @@ tags:
         url: https://www.formahealth.io/
   - name: Patients
     description: Patients are users who are the subject of observations
+  - name: Caregivers
+    description: Caregivers are providers of care to a Patient
 paths:
   /v1/test:
     get:
@@ -161,6 +163,173 @@ paths:
                     type: string
               example:
                 message: Patient deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/patients/{local_id}/caregivers:
+    get:
+      tags:
+        - Caregivers
+      summary: Get all caregivers for a patient
+      parameters:
+        - in: path
+          name: local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to retrieve caregivers for
+      responses:
+        '200':
+          description: Retrieves all caregivers for a specific patient by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Caregiver'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              examples:
+                GetCaregiversExample:
+                  $ref: '#/components/examples/GetCaregiversExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Caregivers
+      summary: Add a caregiver to a patient
+      parameters:
+        - in: path
+          name: local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to add a caregiver to
+      requestBody:
+        $ref: '#/components/requestBodies/NewCaregiver'
+      responses:
+        '201':
+          description: Adds a caregiver to a patient
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Caregiver created successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/patients/{local_id}/caregivers/{caregiver_local_id}:
+    get:
+      tags:
+        - Caregivers
+      summary: Get a Patients Caregiver by ID
+      parameters:
+        - in: path
+          name: local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to retrieve a caregiver for
+        - in: path
+          name: caregiver_local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the caregiver to retrieve
+      responses:
+        '200':
+          description: Retrieves detailed information about a specific caregiver by their ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Caregiver'
+              examples:
+                GetCaregiverExample:
+                  $ref: '#/components/examples/GetCaregiverExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Caregivers
+      summary: Update a Patients Caregiver by ID
+      parameters:
+        - in: path
+          name: local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to update a caregiver for
+        - in: path
+          name: caregiver_local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the caregiver to update
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateCaregiver'
+      responses:
+        '200':
+          description: Updates a caregiver by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Caregiver updated successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Caregivers
+      summary: Delete a Patients Caregiver by ID
+      parameters:
+        - in: path
+          name: local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to delete a caregiver for
+        - in: path
+          name: caregiver_local_id
+          schema:
+            type: string
+          required: true
+          description: ID of the caregiver to delete
+      responses:
+        '200':
+          description: Deletes a caregiver by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Caregiver deleted successfully
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -335,7 +504,107 @@ components:
               value:
                 patient:
                   patient_relationship_attributes:
-                    title: patient
+                    title: partner
+    NewCaregiver:
+      required: true
+      description: A JSON object containing caregiver information and information about the caregivers relationship to the patient
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:                
+              caregiver:
+                type: object
+                properties:
+                  local_id:
+                    type: string
+                    format: uuid
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  nickname: 
+                    type: string
+                  icon_attributes:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Icon'
+                  patient_relationship_attributes:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        format: enum
+          examples:
+            add caregiver:
+              value:
+                caregiver:
+                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  first_name: John
+                  last_name: Smith
+                  nickname: JS
+                  icon_attributes:
+                    style: text
+                    palette_swatch: red
+                    value_text: example_value_text
+                    value_emoji: example_value_emoji
+                    value_sf_symbol: example_value_sf_symbol
+                  patient_relationship_attributes:
+                    title: caregiver
+            add caregiver without icon:
+              value:
+                caregiver:
+                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  nickname: JS
+                  patient_relationship_attributes:
+                    title: doctor
+    UpdateCaregiver:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:                
+              caregiver:
+                type: object
+                properties:
+                  local_id:
+                    type: string
+                    format: uuid
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  nickname: 
+                    type: string
+                  icon_attributes:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Icon'
+                  patient_relationship_attributes:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                        format: enum
+          examples:
+            update caregiver:
+              value:
+                caregiver:
+                  nickname: Nate
+                  icon_attributes:
+                    palette_swatch: blue
+                  patient_relationship_attributes:
+                    title: caregiver
+            update caregiver icon:
+              value:
+                caregiver:
+                  icon_attributes:
+                    palette_swatch: blue
+            update caregiver relationship to user:
+              value:
+                caregiver:
+                  patient_relationship_attributes:
+                    title: spouse
   schemas:
     Test:
       type: object
@@ -389,8 +658,10 @@ components:
           type: string
         last_name:
           type: string
-        nickname: 
+        nickname:
           type: string
+        title:
+          $ref: '#/components/schemas/Title'
         updated_at:
           type: integer
           format: int64 UTC Milliseconds
@@ -551,27 +822,6 @@ components:
               value_text: example_value_text
               value_emoji: example_value_emoji
               value_sf_symbol: example_value_sf_symbol
-            caregivers:
-              - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-                local_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
-                first_name: Jack
-                last_name: Black
-                nickname: JB
-                title: caregiver
-                updated_at: 1712270288
-                icon:
-                  style: text
-                  palette_swatch: mint
-                  value_text: example_value_text
-                  value_emoji: example_value_emoji
-                  value_sf_symbol: example_value_sf_symbol
-              - id: 86efba48-0c19-4117-822a-8675f31fba82
-                local_id: 906bde4b-1994-4118-acbb-e4ccece9953a
-                first_name: Vicki
-                last_name: Dooley
-                nickname: OW
-                title: babysitter
-                icon: null
         meta:
           current_page: 1
           next_page: null
@@ -607,5 +857,51 @@ components:
                 value_text: example_value_text
                 value_emoji: example_value_emoji
                 value_sf_symbol: example_value_sf_symbol
+    GetCaregiversExample:
+      value:
+        data:
+          - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            local_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
+            first_name: Jack
+            last_name: Black
+            nickname: JB
+            title: caregiver
+            updated_at: 1712270288
+            icon:
+              style: text
+              palette_swatch: mint
+              value_text: example_value_text
+              value_emoji: example_value_emoji
+              value_sf_symbol: example_value_sf_symbol
+          - id: 86efba48-0c19-4117-822a-8675f31fba82
+            local_id: 906bde4b-1994-4118-acbb-e4ccece9953a
+            first_name: Vicki
+            last_name: Dooley
+            nickname: OW
+            title: babysitter
+            updated_at: 1712270289
+            icon: null
+        meta:
+          current_page: 1
+          next_page: null
+          prev_page: null
+          total_pages: 1
+          total_count: 2
+    GetCaregiverExample:
+      value:
+        data:
+          id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+          local_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
+          first_name: Jack
+          last_name: Black
+          nickname: JB
+          title: caregiver
+          updated_at: 1712270288
+          icon:
+            style: text
+            palette_swatch: mint
+            value_text: example_value_text
+            value_emoji: example_value_emoji
+            value_sf_symbol: example_value_sf_symbol
 security:
   - bearerAuth: []
