@@ -80,14 +80,306 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/patients/{local_id}:
+  /v1/measurements:
+    get:
+      tags:
+        - System Measurements
+      summary: Get all possible measurements in system
+      responses:
+        '200':
+          description: Retrieves all possible measurements in the system
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SystemMeasurement'
+              examples:
+                GetSystemMeasurementsExample:
+                  $ref: '#/components/examples/GetMeasurementsExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/measurements/{id}:
+    get:
+      tags:
+        - System Measurements
+      summary: Get a measurement by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the measurement to retrieve
+      responses:
+        '200':
+          description: Retrieves detailed information about a specific measurement by its ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/SystemMeasurement'
+              examples:
+                GetSystemMeasurementExample:
+                  $ref: '#/components/examples/GetSystemMeasurementExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/patients/{client_id}/topics:
+    get:
+      tags:
+        - Topics
+      summary: Get all topics for a patient
+      parameters:
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to retrieve topics for
+      responses:
+        '200':
+          description: Retrieves all topics for a specific patient by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Topic'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              examples:
+                GetTopicsExample:
+                  $ref: '#/components/examples/GetTopicsExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Topics
+      summary: Add a topic to a patient
+      parameters:
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to add a topic to
+      requestBody:
+        $ref: '#/components/requestBodies/NewTopic'
+      responses:
+        '201':
+          description: Adds a topic to a patient
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Topic created successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/patients/{patient_client_id}/topics/{client_id}:
+    get:
+      tags:
+        - Topics
+      summary: Get a Patients Topic by ID
+      parameters:
+        - in: path
+          name: patient_client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to retrieve a topic for
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the topic to retrieve
+      responses:
+        '200':
+          description: Retrieves detailed information about a specific topic by their ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Topic'
+              examples:
+                GetTopicExample:
+                  $ref: '#/components/examples/GetTopicExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Topics
+      summary: Update a Patients Topic by ID
+      parameters:
+        - in: path
+          name: patient_client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to update a topic for
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the topic to update
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateTopic'
+      responses:
+        '200':
+          description: Updates a topic by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Topic updated successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Topics
+      summary: Delete a Patients Topic by ID
+      parameters:
+        - in: path
+          name: patient_client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to delete a topic for
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID
+      responses:
+        '200':
+          description: Deletes a topic by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Topic deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/patients/{patient_client_id}/topics/{client_id}/measurements:
+    get:
+      tags:
+        - Measurements
+      summary: Get all measurements for a topic
+      parameters:
+        - in: path
+          name: patient_client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to retrieve measurements for
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the topic to retrieve measurements for
+      responses:
+        '200':
+          description: Retrieves all measurements for a specific topic by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Measurement'
+              examples:
+                GetMeasurementsExample:
+                  $ref: '#/components/examples/GetMeasurentsExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Measurements
+      summary: Add a measurement to a topic
+      parameters:
+        - in: path
+          name: patient_client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to add a measurement to
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the topic to add a measurement to
+      requestBody:
+        $ref: '#/components/requestBodies/NewMeasurement'
+      responses:
+        '201':
+          description: Adds a measurement to a topic
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Measurement created successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/patients/{client_id}:
     get:
       tags:
         - Patients
       summary: Get a patient by ID
       parameters:
         - in: path
-          name: local_id
+          name: client_id
           schema:
             type: string
           required: true
@@ -117,7 +409,7 @@ paths:
       summary: Update a patient by ID
       parameters:
         - in: path
-          name: local_id
+          name: client_id
           schema:
             type: string
           required: true
@@ -146,7 +438,7 @@ paths:
       summary: Delete a patient by ID
       parameters:
         - in: path
-          name: local_id
+          name: client_id
           schema:
             type: string
           required: true
@@ -167,14 +459,14 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/patients/{local_id}/caregivers:
+  /v1/patients/{client_id}/caregivers:
     get:
       tags:
         - Caregivers
       summary: Get all caregivers for a patient
       parameters:
         - in: path
-          name: local_id
+          name: client_id
           schema:
             type: string
           required: true
@@ -206,7 +498,7 @@ paths:
       summary: Add a caregiver to a patient
       parameters:
         - in: path
-          name: local_id
+          name: client_id
           schema:
             type: string
           required: true
@@ -229,20 +521,20 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-  /v1/patients/{local_id}/caregivers/{caregiver_local_id}:
+  /v1/patients/{patient_client_id}/caregivers/{client_id}:
     get:
       tags:
         - Caregivers
       summary: Get a Patients Caregiver by ID
       parameters:
         - in: path
-          name: local_id
+          name: patient_client_id
           schema:
             type: string
           required: true
           description: ID of the patient to retrieve a caregiver for
         - in: path
-          name: caregiver_local_id
+          name: client_id
           schema:
             type: string
           required: true
@@ -272,13 +564,13 @@ paths:
       summary: Update a Patients Caregiver by ID
       parameters:
         - in: path
-          name: local_id
+          name: patient_client_id
           schema:
             type: string
           required: true
           description: ID of the patient to update a caregiver for
         - in: path
-          name: caregiver_local_id
+          name: client_id
           schema:
             type: string
           required: true
@@ -307,13 +599,13 @@ paths:
       summary: Delete a Patients Caregiver by ID
       parameters:
         - in: path
-          name: local_id
+          name: patient_client_id
           schema:
             type: string
           required: true
           description: ID of the patient to delete a caregiver for
         - in: path
-          name: caregiver_local_id
+          name: client_id
           schema:
             type: string
           required: true
@@ -401,7 +693,7 @@ components:
               patient:
                 type: object
                 properties:
-                  local_id:
+                  client_id:
                     type: string
                     format: uuid
                   first_name:
@@ -417,14 +709,14 @@ components:
                   patient_relationship_attributes:
                     type: object
                     properties:
-                      title:
+                      relation:
                         type: string
                         format: enum
           examples:
             add patient:
               value:
                 patient:
-                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
                   first_name: John
                   last_name: Smith
                   nickname: JS
@@ -435,18 +727,18 @@ components:
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
                   patient_relationship_attributes:
-                    title: nurse
+                    relation: guardian
             add patient without icon:
               value:
                 patient:
-                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
                   nickname: JS
                   patient_relationship_attributes:
-                    title: caregiver
+                    relation: caregiver
             add self as patient:
               value:
                 patient:
-                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
                   first_name: John
                   last_name: Smith
                   nickname: JS
@@ -457,7 +749,7 @@ components:
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
                   patient_relationship_attributes:
-                    title: patient
+                    relation: patient
     UpdatePatient:
       content:
         application/json:
@@ -467,7 +759,7 @@ components:
               patient:
                 type: object
                 properties:
-                  local_id:
+                  client_id:
                     type: string
                     format: uuid
                   first_name:
@@ -483,7 +775,7 @@ components:
                   patient_relationship_attributes:
                     type: object
                     properties:
-                      title:
+                      relation:
                         type: string
                         format: enum
           examples:
@@ -494,7 +786,7 @@ components:
                   icon_attributes:
                     palette_swatch: blue
                   patient_relationship_attributes:
-                    title: caregiver
+                    relation: caregiver
             update patient icon:
               value:
                 patient:
@@ -504,7 +796,7 @@ components:
               value:
                 patient:
                   patient_relationship_attributes:
-                    title: partner
+                    relation: partner
     NewCaregiver:
       required: true
       description: A JSON object containing caregiver information and information about the caregivers relationship to the patient
@@ -516,7 +808,7 @@ components:
               caregiver:
                 type: object
                 properties:
-                  local_id:
+                  client_id:
                     type: string
                     format: uuid
                   first_name:
@@ -532,14 +824,14 @@ components:
                   patient_relationship_attributes:
                     type: object
                     properties:
-                      title:
+                      relation:
                         type: string
                         format: enum
           examples:
             add caregiver:
               value:
                 caregiver:
-                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
                   first_name: John
                   last_name: Smith
                   nickname: JS
@@ -550,14 +842,14 @@ components:
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
                   patient_relationship_attributes:
-                    title: caregiver
+                    relation: caregiver
             add caregiver without icon:
               value:
                 caregiver:
-                  local_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
                   nickname: JS
                   patient_relationship_attributes:
-                    title: doctor
+                    relation: coach
     UpdateCaregiver:
       content:
         application/json:
@@ -567,7 +859,7 @@ components:
               caregiver:
                 type: object
                 properties:
-                  local_id:
+                  client_id:
                     type: string
                     format: uuid
                   first_name:
@@ -583,7 +875,7 @@ components:
                   patient_relationship_attributes:
                     type: object
                     properties:
-                      title:
+                      relation:
                         type: string
                         format: enum
           examples:
@@ -594,7 +886,7 @@ components:
                   icon_attributes:
                     palette_swatch: blue
                   patient_relationship_attributes:
-                    title: caregiver
+                    relation: caregiver
             update caregiver icon:
               value:
                 caregiver:
@@ -604,7 +896,111 @@ components:
               value:
                 caregiver:
                   patient_relationship_attributes:
-                    title: spouse
+                    relation: spouse
+    NewTopic:
+      required: true
+      description: A JSON object containing topic information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:                
+              topic:
+                type: object
+                properties:
+                  client_id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  icon_attributes:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Icon'
+          examples:
+            add topic:
+              value:
+                topic:
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  name: Sleep
+                  description: Sleep patterns
+                  icon_attributes:
+                    style: text
+                    palette_swatch: red
+                    value_text: example_value_text
+                    value_emoji: example_value_emoji
+                    value_sf_symbol: example_value_sf_symbol
+            add topic without icon:
+              value:
+                topic:
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  name: Sleep
+                  description: Sleep patterns
+    UpdateTopic:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:                
+              topic:
+                type: object
+                properties:
+                  client_id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  icon_attributes:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Icon'
+          examples:
+            update topic:
+              value:
+                topic:
+                  name: Sleep
+                  description: Sleep patterns
+                  icon_attributes:
+                    palette_swatch: blue
+            update topic icon:
+              value:
+                topic:
+                  icon_attributes:
+                    palette_swatch: blue
+    NewMeasurement:
+      required: true
+      description: A JSON object containing measurement information
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:                
+              measurement:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  measurement_id:
+                    type: string
+                    format: uuid
+          examples:
+            add measurement:
+              value:
+                measurement:
+                  name: Sleep duration
+                  description: How long the patient sleeps
+                  measurement_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            add measurement without description:
+              value:
+                measurement:
+                  name: Sleep duration
+                  measurement_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
   schemas:
     Test:
       type: object
@@ -624,7 +1020,7 @@ components:
         id:
           type: string
           format: uuid
-        local_id:
+        client_id:
           type: string
           format: uuid
         first_name:
@@ -644,14 +1040,14 @@ components:
             $ref: '#/components/schemas/Caregiver'
       required:
         - id
-        - local_id
+        - client_id
     Caregiver:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        local_id:
+        client_id:
           type: string
           format: uuid
         first_name:
@@ -660,8 +1056,8 @@ components:
           type: string
         nickname:
           type: string
-        title:
-          $ref: '#/components/schemas/Title'
+        relation:
+          $ref: '#/components/schemas/Relation'
         updated_at:
           type: integer
           format: int64 UTC Milliseconds
@@ -669,27 +1065,76 @@ components:
           $ref: '#/components/schemas/Icon'
       required:
         - id
-        - local_id
+        - client_id
     PatientRelationship:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        title:
-          $ref: '#/components/schemas/Title'
+        relation:
+          $ref: '#/components/schemas/Relation'
         privilege:
           $ref: '#/components/schemas/Privilege'
         patient:
           $ref: '#/components/schemas/Patient'
-        relationshipable:
+        care_provider:
           $ref: '#/components/schemas/Caregiver'
       required:
         - id
-        - title
+        - relation
         - privilege
         - patient
-        - relationshipable
+        - care_provider
+    SystemMeasurement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        measurement_type:
+          $ref: '#/components/schemas/MeasurementType'
+        name:
+          type: string
+        config:
+          type: object
+    Topic:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        client_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        updated_at:
+          type: integer
+          format: int64 UTC Milliseconds
+        icon:
+          $ref: '#/components/schemas/Icon'
+        measurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Measurement'
+    Measurement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        measurement:
+          $ref: '#/components/schemas/SystemMeasurement'
+        updated_at:
+          type: integer
+          format: int64 UTC Milliseconds
     Icon:
       type: object
       properties:
@@ -725,26 +1170,25 @@ components:
           type: integer
         detail:
           type: string
-    Title:
+    MeasurementType:
+      type: string
+      enum:
+        - unit
+        - ordinal_scale
+        - nominal_scale
+        - binary_scale
+        - custom
+    CodeSystem:
+      type: string
+      enum:
+        - snomed
+        - loinc
+        - unknown
+    Relation:
       type: string
       enum:
         - caregiver
         - patient
-        - nurse
-        - doctor
-        - physician_assistant
-        - nurse_practitioner
-        - medical_assistant
-        - surgeon
-        - pharmacist
-        - physical_therapist
-        - occupational_therapist
-        - speech_therapist
-        - psychiatrist
-        - psychologist
-        - nutritionist
-        - dentist
-        - optometrist
         - spouse
         - partner
         - guardian
@@ -754,12 +1198,9 @@ components:
         - babysitter
         - friend
         - family_member
-        - social_worker
-        - case_manager
+        - counselor
         - coach
         - teacher
-        - counselor
-        - other
     Privilege:
       type: string
       enum:
@@ -807,11 +1248,35 @@ components:
           value_text: example_value_text
           value_emoji: example_value_emoji
           value_sf_symbol: example_value_sf_symbol
+    GetSystemMeasurementsExample:
+      value:
+        data:
+          - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            measurement_type: nominal_scale
+            name: Stool size
+            config:
+              type: string
+              options:
+                - value: Small
+                - value: Medium
+                - value: Large
+    GetSystemMeasurementExample:
+      value:
+        data:
+          id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+          measurement_type: nominal_scale
+          name: Stool size
+          config:
+            type: string
+            options:
+              - value: Small
+              - value: Medium
+              - value: Large
     GetPatientsExample:
       value:
         data:
           - id: 38734022-af86-473c-8a9a-be7671c9c1fc
-            local_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+            client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
             first_name: Jessica
             last_name: White
             nickname: JW
@@ -832,7 +1297,7 @@ components:
       value:
         data:
           id: 38734022-af86-473c-8a9a-be7671c9c1fc
-          local_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+          client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
           first_name: Jessica
           last_name: White
           nickname: JW
@@ -845,11 +1310,11 @@ components:
             value_sf_symbol: example_value_sf_symbol
           caregivers:
             - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-              local_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
+              client_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
               first_name: Jack
               last_name: Black
               nickname: JB
-              title: doctor
+              relation: caregiver
               updated_at: 1712270288
               icon:
                 style: text
@@ -861,11 +1326,11 @@ components:
       value:
         data:
           - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-            local_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
+            client_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
             first_name: Jack
             last_name: Black
             nickname: JB
-            title: caregiver
+            relation: family_member
             updated_at: 1712270288
             icon:
               style: text
@@ -874,11 +1339,11 @@ components:
               value_emoji: example_value_emoji
               value_sf_symbol: example_value_sf_symbol
           - id: 86efba48-0c19-4117-822a-8675f31fba82
-            local_id: 906bde4b-1994-4118-acbb-e4ccece9953a
+            client_id: 906bde4b-1994-4118-acbb-e4ccece9953a
             first_name: Vicki
             last_name: Dooley
             nickname: OW
-            title: babysitter
+            relation: babysitter
             updated_at: 1712270289
             icon: null
         meta:
@@ -891,11 +1356,11 @@ components:
       value:
         data:
           id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-          local_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
+          client_id: cd744f6b-89d4-47a7-8a0e-84f1d6da62bb
           first_name: Jack
           last_name: Black
           nickname: JB
-          title: caregiver
+          relation: caregiver
           updated_at: 1712270288
           icon:
             style: text
@@ -903,5 +1368,59 @@ components:
             value_text: example_value_text
             value_emoji: example_value_emoji
             value_sf_symbol: example_value_sf_symbol
+    GetTopicsExample:
+      value:
+        data:
+          - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+            name: Sleep
+            description: Sleep patterns
+            updated_at: 1712270287
+            icon:
+              style: text
+              palette_swatch: red
+              value_text: example_value_text
+              value_emoji: example_value_emoji
+              value_sf_symbol: example_value_sf_symbol
+            measurements:
+              - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                measurement_type: unit
+                name: Duration
+                description: Total hours of sleep
+                updated_at: 1712270287
+                config:
+                  type: integer
+                  unit: seconds
+                  name_unit: hours_minutes
+        meta:
+          current_page: 1
+          next_page: null
+          prev_page: null
+          total_pages: 1
+          total_count: 1
+    GetTopicExample:
+      value:
+        data:
+          id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+          client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+          name: Sleep
+          description: Sleep patterns
+          updated_at: 1712270287
+          icon:
+            style: text
+            palette_swatch: red
+            value_text: example_value_text
+            value_emoji: example_value_emoji
+            value_sf_symbol: example_value_sf_symbol
+          measurements:
+            - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+              measurement_type: unit
+              name: Duration
+              description: Total hours of sleep
+              updated_at: 1712270287
+              config:
+                type: integer
+                unit: seconds
+                name_unit: hours_minutes
 security:
   - bearerAuth: []
