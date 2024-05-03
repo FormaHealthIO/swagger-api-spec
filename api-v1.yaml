@@ -854,11 +854,8 @@ components:
                   measurement_ids:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          format: uuid
+                      type: string
+                      format: uuid
           examples:
             add topic:
               value:
@@ -873,8 +870,8 @@ components:
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
                   measurement_ids:
-                    - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
-                    - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                    - c737234a-57f2-4cd5-8ab0-6d861e569aed
+                    - 8e0f94c5-98af-40eb-a162-4a45893fefb7
             add topic without measurements:
               value:
                 topic:
@@ -894,8 +891,7 @@ components:
                   name: Sleep
                   description: Sleep patterns
                   measurement_ids:
-                    - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
-                    - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                    - c737234a-57f2-4cd5-8ab0-6d861e569aed
     UpdateTopic:
       content:
         application/json:
@@ -916,7 +912,7 @@ components:
                     type: object
                     schema:
                       $ref: '#/components/schemas/Icon'
-                  measurement_ids:
+                  measurements_attributes:
                     type: array
                     items:
                       type: object
@@ -942,7 +938,7 @@ components:
             update topic measurements:
               value:
                 topic:
-                  measurement_ids:
+                  measurements_attributes:
                     - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
                       _destroy: true
   schemas:
