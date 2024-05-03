@@ -5,7 +5,7 @@ info:
     REST API providing management for user accounts, roles, patient and caregiver profiles, along with topics and clinical studies. Additionally, it facilitates the processing of voice-to-text observations through an advanced Language Model (LLM), structuring them into OMOP (Observational Medical Outcomes Partnership) compliant data for seamless integration and analysis.
   version: 1.0.0
 servers:
-  - url: https://api-omop-web.onrender.com
+  - url: https://api-qdmh.onrender.com
 tags:
   - name: Test
     description: Test API call
@@ -14,6 +14,10 @@ tags:
         url: https://www.formahealth.io/
   - name: Patients
     description: Patients are users who are the subject of observations
+  - name: System Measurements
+    description: System Measurements are the possible observation input options
+  - name: Topics
+    description: Topics are categories of observations
   - name: Caregivers
     description: Caregivers are providers of care to a Patient
 paths:
@@ -80,6 +84,93 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+  /v1/patients/{client_id}:
+    get:
+      tags:
+        - Patients
+      summary: Get a patient by ID
+      parameters:
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to retrieve
+      responses:
+        '200':
+          description: Retrieves detailed information about a specific patient by their ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Patient'
+              examples:
+                GetPatientExample:
+                  $ref: '#/components/examples/GetPatientExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Patients
+      summary: Update a patient by ID
+      parameters:
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to update
+      requestBody:
+        $ref: '#/components/requestBodies/UpdatePatient'
+      responses:
+        '200':
+          description: Updates a patient by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Patient updated successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Patients
+      summary: Delete a patient by ID
+      parameters:
+        - in: path
+          name: client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to delete
+      responses:
+        '200':
+          description: Deletes a patient by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Patient deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/measurements:
     get:
       tags:
@@ -96,9 +187,9 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/SystemMeasurement'
+                      $ref: '#/components/schemas/Measurement'
               examples:
-                GetSystemMeasurementsExample:
+                GetMeasurementsExample:
                   $ref: '#/components/examples/GetMeasurementsExample'
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -125,10 +216,10 @@ paths:
                   data:
                     type: object
                     schema:
-                      $ref: '#/components/schemas/SystemMeasurement'
+                      $ref: '#/components/schemas/Measurement'
               examples:
-                GetSystemMeasurementExample:
-                  $ref: '#/components/examples/GetSystemMeasurementExample'
+                GetMeasurementExample:
+                  $ref: '#/components/examples/GetMeasurementExample'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -296,165 +387,6 @@ paths:
                     type: string
               example:
                 message: Topic deleted successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /v1/patients/{patient_client_id}/topics/{client_id}/measurements:
-    get:
-      tags:
-        - Measurements
-      summary: Get all measurements for a topic
-      parameters:
-        - in: path
-          name: patient_client_id
-          schema:
-            type: string
-          required: true
-          description: ID of the patient to retrieve measurements for
-        - in: path
-          name: client_id
-          schema:
-            type: string
-          required: true
-          description: ID of the topic to retrieve measurements for
-      responses:
-        '200':
-          description: Retrieves all measurements for a specific topic by their ID
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Measurement'
-              examples:
-                GetMeasurementsExample:
-                  $ref: '#/components/examples/GetMeasurentsExample'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    post:
-      tags:
-        - Measurements
-      summary: Add a measurement to a topic
-      parameters:
-        - in: path
-          name: patient_client_id
-          schema:
-            type: string
-          required: true
-          description: ID of the patient to add a measurement to
-        - in: path
-          name: client_id
-          schema:
-            type: string
-          required: true
-          description: ID of the topic to add a measurement to
-      requestBody:
-        $ref: '#/components/requestBodies/NewMeasurement'
-      responses:
-        '201':
-          description: Adds a measurement to a topic
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                message: Measurement created successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /v1/patients/{client_id}:
-    get:
-      tags:
-        - Patients
-      summary: Get a patient by ID
-      parameters:
-        - in: path
-          name: client_id
-          schema:
-            type: string
-          required: true
-          description: ID of the patient to retrieve
-      responses:
-        '200':
-          description: Retrieves detailed information about a specific patient by their ID.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    schema:
-                      $ref: '#/components/schemas/Patient'
-              examples:
-                GetPatientExample:
-                  $ref: '#/components/examples/GetPatientExample'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    patch:
-      tags:
-        - Patients
-      summary: Update a patient by ID
-      parameters:
-        - in: path
-          name: client_id
-          schema:
-            type: string
-          required: true
-          description: ID of the patient to update
-      requestBody:
-        $ref: '#/components/requestBodies/UpdatePatient'
-      responses:
-        '200':
-          description: Updates a patient by their ID
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                message: Patient updated successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    delete:
-      tags:
-        - Patients
-      summary: Delete a patient by ID
-      parameters:
-        - in: path
-          name: client_id
-          schema:
-            type: string
-          required: true
-          description: ID of the patient to delete
-      responses:
-        '200':
-          description: Deletes a patient by their ID
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-              example:
-                message: Patient deleted successfully
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -919,8 +851,31 @@ components:
                     type: object
                     schema:
                       $ref: '#/components/schemas/Icon'
+                  measurement_ids:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
           examples:
             add topic:
+              value:
+                topic:
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  name: Sleep
+                  description: Sleep patterns
+                  icon_attributes:
+                    style: text
+                    palette_swatch: red
+                    value_text: example_value_text
+                    value_emoji: example_value_emoji
+                    value_sf_symbol: example_value_sf_symbol
+                  measurement_ids:
+                    - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+                    - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            add topic without measurements:
               value:
                 topic:
                   client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
@@ -938,6 +893,9 @@ components:
                   client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
                   name: Sleep
                   description: Sleep patterns
+                  measurement_ids:
+                    - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+                    - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
     UpdateTopic:
       content:
         application/json:
@@ -958,6 +916,16 @@ components:
                     type: object
                     schema:
                       $ref: '#/components/schemas/Icon'
+                  measurement_ids:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        _destroy:
+                          type: boolean
           examples:
             update topic:
               value:
@@ -971,36 +939,12 @@ components:
                 topic:
                   icon_attributes:
                     palette_swatch: blue
-    NewMeasurement:
-      required: true
-      description: A JSON object containing measurement information
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:                
-              measurement:
-                type: object
-                properties:
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  measurement_id:
-                    type: string
-                    format: uuid
-          examples:
-            add measurement:
+            update topic measurements:
               value:
-                measurement:
-                  name: Sleep duration
-                  description: How long the patient sleeps
-                  measurement_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-            add measurement without description:
-              value:
-                measurement:
-                  name: Sleep duration
-                  measurement_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                topic:
+                  measurement_ids:
+                    - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+                      _destroy: true
   schemas:
     Test:
       type: object
@@ -1086,7 +1030,7 @@ components:
         - privilege
         - patient
         - care_provider
-    SystemMeasurement:
+    Measurement:
       type: object
       properties:
         id:
@@ -1096,6 +1040,11 @@ components:
           $ref: '#/components/schemas/MeasurementType'
         name:
           type: string
+        description:
+          type: string
+        updated_at:
+          type: integer
+          format: int64 UTC Milliseconds
         config:
           type: object
     Topic:
@@ -1120,21 +1069,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Measurement'
-    Measurement:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        description:
-          type: string
-        measurement:
-          $ref: '#/components/schemas/SystemMeasurement'
-        updated_at:
-          type: integer
-          format: int64 UTC Milliseconds
     Icon:
       type: object
       properties:
@@ -1178,12 +1112,6 @@ components:
         - nominal_scale
         - binary_scale
         - custom
-    CodeSystem:
-      type: string
-      enum:
-        - snomed
-        - loinc
-        - unknown
     Relation:
       type: string
       enum:
@@ -1248,9 +1176,16 @@ components:
           value_text: example_value_text
           value_emoji: example_value_emoji
           value_sf_symbol: example_value_sf_symbol
-    GetSystemMeasurementsExample:
+    GetMeasurementsExample:
       value:
         data:
+          - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+            measurement_type: unit
+            name: Duration of seizure
+            config:
+              type: integer
+              unit: seconds
+              display_unit: minutes_seconds
           - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
             measurement_type: nominal_scale
             name: Stool size
@@ -1260,18 +1195,22 @@ components:
                 - value: Small
                 - value: Medium
                 - value: Large
-    GetSystemMeasurementExample:
+        meta:
+          current_page: 1
+          next_page: null
+          prev_page: null
+          total_pages: 1
+          total_count: 2
+    GetMeasurementExample:
       value:
         data:
-          id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-          measurement_type: nominal_scale
-          name: Stool size
+          id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+          measurement_type: unit
+          name: Duration of seizure
           config:
-            type: string
-            options:
-              - value: Small
-              - value: Medium
-              - value: Large
+            type: integer
+            unit: seconds
+            display_unit: minutes_seconds
     GetPatientsExample:
       value:
         data:
@@ -1373,8 +1312,8 @@ components:
         data:
           - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
             client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
-            name: Sleep
-            description: Sleep patterns
+            name: Seizure
+            description: Seizure observations
             updated_at: 1712270287
             icon:
               style: text
@@ -1383,15 +1322,13 @@ components:
               value_emoji: example_value_emoji
               value_sf_symbol: example_value_sf_symbol
             measurements:
-              - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+              - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
                 measurement_type: unit
-                name: Duration
-                description: Total hours of sleep
-                updated_at: 1712270287
+                name: Duration of seizure
                 config:
                   type: integer
                   unit: seconds
-                  name_unit: hours_minutes
+                  display_unit: minutes_seconds
         meta:
           current_page: 1
           next_page: null
@@ -1403,8 +1340,8 @@ components:
         data:
           id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
           client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
-          name: Sleep
-          description: Sleep patterns
+          name: Seizure
+          description: Seizure observations
           updated_at: 1712270287
           icon:
             style: text
@@ -1413,14 +1350,12 @@ components:
             value_emoji: example_value_emoji
             value_sf_symbol: example_value_sf_symbol
           measurements:
-            - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
               measurement_type: unit
-              name: Duration
-              description: Total hours of sleep
-              updated_at: 1712270287
+              name: Duration of seizure
               config:
                 type: integer
                 unit: seconds
-                name_unit: hours_minutes
+                display_unit: minutes_seconds
 security:
   - bearerAuth: []
