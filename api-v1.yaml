@@ -12,14 +12,18 @@ tags:
     externalDocs:
         description: Find out more
         url: https://www.formahealth.io/
-  - name: Patients
-    description: Patients are users who are the subject of observations
   - name: System Measurements
     description: System Measurements are the possible observation input options
-  - name: Topics
-    description: Topics are categories of observations
+  - name: System Tags
+    description: System Tags are the possible observation input options
+  - name: Patients
+    description: Patients are users who are the subject of observations
   - name: Caregivers
     description: Caregivers are providers of care to a Patient
+  - name: Topics
+    description: Topics are categories of observations
+  - name: Logs
+    description: Logs are observations made by Caregivers or Patients
 paths:
   /v1/test:
     get:
@@ -38,6 +42,106 @@ paths:
                   $ref: '#/components/examples/TestExample'
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /v1/measurements:
+    get:
+      tags:
+        - System Measurements
+      summary: Get all possible measurements in system
+      responses:
+        '200':
+          description: Retrieves all possible measurements in the system
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Measurement'
+              examples:
+                GetMeasurementsExample:
+                  $ref: '#/components/examples/GetMeasurementsExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/measurements/{id}:
+    get:
+      tags:
+        - System Measurements
+      summary: Get a measurement by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the measurement to retrieve
+      responses:
+        '200':
+          description: Retrieves detailed information about a specific measurement by its ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Measurement'
+              examples:
+                GetMeasurementExample:
+                  $ref: '#/components/examples/GetMeasurementExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/tags:
+    get:
+      tags:
+        - System Tags
+      summary: Get all possible tags in system
+      responses:
+        '200':
+          description: Retrieves all possible tags in the system
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /v1/tags/{id}:
+    get:
+      tags:
+        - System Tags
+      summary: Get a tag by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the tag to retrieve
+      responses:
+        '200':
+          description: Retrieves detailed information about a specific tag by its ID.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    schema:
+                      $ref: '#/components/schemas/Tag'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /v1/patients:
     get:
       tags:
@@ -167,59 +271,6 @@ paths:
                     type: string
               example:
                 message: Patient deleted successfully
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-  /v1/measurements:
-    get:
-      tags:
-        - System Measurements
-      summary: Get all possible measurements in system
-      responses:
-        '200':
-          description: Retrieves all possible measurements in the system
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Measurement'
-              examples:
-                GetMeasurementsExample:
-                  $ref: '#/components/examples/GetMeasurementsExample'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-  /v1/measurements/{id}:
-    get:
-      tags:
-        - System Measurements
-      summary: Get a measurement by ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: ID of the measurement to retrieve
-      responses:
-        '200':
-          description: Retrieves detailed information about a specific measurement by its ID.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    schema:
-                      $ref: '#/components/schemas/Measurement'
-              examples:
-                GetMeasurementExample:
-                  $ref: '#/components/examples/GetMeasurementExample'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -554,6 +605,68 @@ paths:
                     type: string
               example:
                 message: Caregiver deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /v1/patients/{patient_client_id}/logs:
+    get:
+      tags:
+        - Logs
+      summary: Get all logs for a patient
+      parameters:
+        - in: path
+          name: patient_client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to retrieve logs for
+      responses:
+        '200':
+          description: Retrieves all logs for a specific patient by their ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Log'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              examples:
+                GetLogsExample:
+                  $ref: '#/components/examples/GetLogsExample'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Logs
+      summary: Add a log to a patient
+      parameters:
+        - in: path
+          name: patient_client_id
+          schema:
+            type: string
+          required: true
+          description: ID of the patient to add a log to
+      requestBody:
+        $ref: '#/components/requestBodies/NewLog'
+      responses:
+        '201':
+          description: Adds a log to a patient
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Log created successfully
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -941,6 +1054,30 @@ components:
                   measurements_attributes:
                     - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
                       _destroy: true
+    NewLog:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:                
+              log:
+                type: object
+                properties:
+                  client_id:
+                    type: string
+                    format: uuid
+                  time_of_observation:
+                    type: integer
+                    format: int64 UTC Milliseconds
+                  input_text:
+                    type: string
+          examples:
+            add log:
+              value:
+                log:
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  time_of_observation: 1631535600000
+                  input_text: I feel great today
   schemas:
     Test:
       type: object
@@ -1038,11 +1175,18 @@ components:
           type: string
         description:
           type: string
-        updated_at:
-          type: integer
-          format: int64 UTC Milliseconds
         config:
           type: object
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tag_type:
+          $ref: '#/components/schemas/TagType'
+        name:
+          type: string
     Topic:
       type: object
       properties:
@@ -1065,6 +1209,65 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Measurement'
+    Log:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        client_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/LogStatus'
+        time_of_observation:
+          type: integer
+          format: int64 UTC Milliseconds
+        input_text:
+          type: string
+        notes:
+          type: string
+        measurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogMeasurement'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogTag'
+        updated_at:
+          type: integer
+          format: int64 UTC Milliseconds
+        topic:
+          $ref: '#/components/schemas/Topic'
+        patient:
+          $ref: '#/components/schemas/Patient'
+        logged_by:
+          $ref: '#/components/schemas/Caregiver'
+    LogMeasurement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        measurement_type:
+          $ref: '#/components/schemas/MeasurementType'
+        name:
+          type: string
+        value:
+          type: integer
+        config:
+          type: object
+    LogTag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tag_type:
+          $ref: '#/components/schemas/TagType'
+        name:
+          type: string
     Icon:
       type: object
       properties:
@@ -1100,6 +1303,12 @@ components:
           type: integer
         detail:
           type: string
+    LogStatus:
+      type: string
+      enum:
+        - pending
+        - failed
+        - processed
     MeasurementType:
       type: string
       enum:
@@ -1108,6 +1317,14 @@ components:
         - nominal_scale
         - binary_scale
         - custom
+    TagType:
+      type: string
+      enum:
+        - symptom
+        - trigger
+        - medication
+        - category
+        - other
     Relation:
       type: string
       enum:
@@ -1353,5 +1570,63 @@ components:
                 type: integer
                 unit: seconds
                 display_unit: minutes_seconds
+    GetLogsExample:
+      value:
+        data:
+          - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+            topic_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            patient_id: 38734022-af86-473c-8a9a-be7671c9c1fc
+            logged_by_id: 8e0f94c5-
+            status: processed
+            time_of_observation: 1712270287
+            input_text: "This is a log entry"
+            notes: "These are notes"
+            updated_at: 1712270287
+            measurements:
+              - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+                measurement_type: unit
+                name: Duration of seizure
+                value: 30
+                config:
+                  type: integer
+                  unit: seconds
+                  display_unit: minutes_seconds
+            tags:
+              - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                tag_type: category
+                name: Tonic-Clonic
+        meta:
+          current_page: 1
+          next_page: null
+          prev_page: null
+          total_pages: 1
+          total_count: 1
+    GetLogExample:
+      value:
+        data:
+          id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+          client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+          topic_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+          patient_id: 38734022-af86-473c-8a9a-be7671c9c1fc
+          logged_by_id: 8e0f94c5-
+          status: processed
+          time_of_observation: 1712270287
+          input_text: "This is a log entry"
+          notes: "These are notes"
+          updated_at: 1712270287
+          measurements:
+            - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+              measurement_type: unit
+              name: Duration of seizure
+              value: 30
+              config:
+                type: integer
+                unit: seconds
+                display_unit: minutes_seconds
+          tags:
+            - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+              tag_type: category
+              name: Tonic-Clonic
 security:
   - bearerAuth: []
