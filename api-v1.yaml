@@ -112,6 +112,9 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Tag'
+              examples:
+                GetTagsExample:
+                  $ref: '#/components/examples/GetTagsExample'
         '401':
           $ref: '#/components/responses/Unauthorized'
   /v1/tags/{id}:
@@ -138,6 +141,9 @@ paths:
                     type: object
                     schema:
                       $ref: '#/components/schemas/Tag'
+              examples:
+                GetTagExample:
+                  $ref: '#/components/examples/GetTagExample'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -964,6 +970,10 @@ components:
                     type: object
                     schema:
                       $ref: '#/components/schemas/Icon'
+                  tag_groups_attributes:
+                    type: array
+                    schema:
+                      $ref: '#/components/schemas/TagGroup'
                   measurement_ids:
                     type: array
                     items:
@@ -982,10 +992,20 @@ components:
                     value_text: example_value_text
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
+                  tag_groups_attributes:
+                    - client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                      name: Triggers
+                      tag_ids:
+                        - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                    - client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                      name: Sleep Apnea
+                      tag_ids:
+                        - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                        - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
                   measurement_ids:
                     - c737234a-57f2-4cd5-8ab0-6d861e569aed
                     - 8e0f94c5-98af-40eb-a162-4a45893fefb7
-            add topic without measurements:
+            add topic with icon:
               value:
                 topic:
                   client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
@@ -997,7 +1017,23 @@ components:
                     value_text: example_value_text
                     value_emoji: example_value_emoji
                     value_sf_symbol: example_value_sf_symbol
-            add topic without icon:
+            add topic with tag_groups:
+              value:
+                topic:
+                  client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  name: Sleep
+                  description: Sleep patterns
+                  tag_groups_attributes:
+                    - client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                      name: Triggers
+                      tag_ids:
+                        - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                    - client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                      name: Sleep Apnea
+                      tag_ids:
+                        - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                        - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+            add topic with measurements:
               value:
                 topic:
                   client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
@@ -1025,6 +1061,26 @@ components:
                     type: object
                     schema:
                       $ref: '#/components/schemas/Icon'
+                  tag_groups_attributes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
+                        tag_attributes:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                                format: uuid
+                              _destroy:
+                                type: boolean
                   measurements_attributes:
                     type: array
                     items:
@@ -1048,6 +1104,19 @@ components:
                 topic:
                   icon_attributes:
                     palette_swatch: blue
+            update topic tag_groups:
+              value:
+                topic:
+                  tag_groups_attributes:
+                    - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                      name: Update Tag Group Name
+                      tag_attributes:
+                        - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                        - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+                    - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+                      tag_attributes:
+                        - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+                          _destroy: true
             update topic measurements:
               value:
                 topic:
@@ -1066,9 +1135,11 @@ components:
                   client_id:
                     type: string
                     format: uuid
-                  time_of_observation:
+                  log_datetime:
                     type: integer
                     format: int64 UTC Milliseconds
+                  timezone_offset:
+                    type: integer
                   input_text:
                     type: string
           examples:
@@ -1076,8 +1147,9 @@ components:
               value:
                 log:
                   client_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-                  time_of_observation: 1631535600000
-                  input_text: I feel great today
+                  log_datetime: 1631535600000
+                  timezone_offset: -25200
+                  input_text: This is a test log
   schemas:
     Test:
       type: object
@@ -1163,6 +1235,29 @@ components:
         - privilege
         - patient
         - care_provider
+    TagGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        client_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
     Measurement:
       type: object
       properties:
@@ -1177,16 +1272,6 @@ components:
           type: string
         config:
           type: object
-    Tag:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        tag_type:
-          $ref: '#/components/schemas/TagType'
-        name:
-          type: string
     Topic:
       type: object
       properties:
@@ -1220,7 +1305,12 @@ components:
           format: uuid
         status:
           $ref: '#/components/schemas/LogStatus'
-        time_of_observation:
+        log_datetime:
+          type: integer
+          format: int64 UTC Milliseconds
+        timezone_offset:
+          type: integer
+        event_datetime:
           type: integer
           format: int64 UTC Milliseconds
         input_text:
@@ -1264,8 +1354,6 @@ components:
         id:
           type: string
           format: uuid
-        tag_type:
-          $ref: '#/components/schemas/TagType'
         name:
           type: string
     Icon:
@@ -1317,14 +1405,6 @@ components:
         - nominal_scale
         - binary_scale
         - custom
-    TagType:
-      type: string
-      enum:
-        - symptom
-        - trigger
-        - medication
-        - category
-        - other
     Relation:
       type: string
       enum:
@@ -1394,36 +1474,96 @@ components:
         data:
           - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
             measurement_type: unit
-            name: Duration of seizure
+            name: Duration of Seizure
             config:
+              min: 0
               type: integer
               unit: seconds
-              display_unit: minutes_seconds
           - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-            measurement_type: nominal_scale
-            name: Stool size
+            measurement_type: binary_scale
+            name: Color of Stool
             config:
               type: string
               options:
-                - value: Small
-                - value: Medium
-                - value: Large
+                - value: Normal
+                - value: Abnormal
+          - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            measurement_type: nominal_scale
+            name: Urine Color
+            config:
+              type: string
+              options:
+                - value: Clear
+                - value: Yellow
+                - value: Green
+                - value: Brown
+                - value: Red
+                - value: Cloudy
+          - id: 86efba48-0c19-4117-822a-8675f31fba82
+            measurement_type: ordinal_scale
+            name: Pain Intensity
+            config:
+              max: 10
+              min: 0
+              type: integer
+              options:
+                - value: 0
+                  description: No Pain
+                  palette_Swatch: blue
+                - value: 1
+                - value: 2
+                  description: Mild
+                  palette_Swatch: green
+                - value: 3
+                - value: 4
+                  description: Moderate
+                  palette_Swatch: yellow
+                - value: 5
+                - value: 6
+                  description: Severe
+                  palette_Swatch: orange
+                - value: 7
+                - value: 8
+                  description: Extreme
+                  palette_Swatch: red
+                - value: 9
+                - value: 10
+                  description: Worst Pain Possible
+                  palette_Swatch: purple
+        meta:
+          current_page: 1
+          next_page: null
+          prev_page: null
+          total_pages: 1
+          total_count: 3
+    GetMeasurementExample:
+      value:
+        data:
+          id: c737234a-57f2-4cd5-8ab0-6d861e569aed
+          measurement_type: unit
+          name: Duration of Seizure
+          config:
+            min: 0
+            type: integer
+            unit: seconds
+    GetTagsExample:
+      value:
+        data:
+          - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            name: Decrease in Appetite
+          - id: 86efba48-0c19-4117-822a-8675f31fba82
+            name: Tonic-Clonic Seizure
         meta:
           current_page: 1
           next_page: null
           prev_page: null
           total_pages: 1
           total_count: 2
-    GetMeasurementExample:
+    GetTagExample:
       value:
         data:
-          id: c737234a-57f2-4cd5-8ab0-6d861e569aed
-          measurement_type: unit
-          name: Duration of seizure
-          config:
-            type: integer
-            unit: seconds
-            display_unit: minutes_seconds
+          id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+          name: Decrease in Appetite
     GetPatientsExample:
       value:
         data:
@@ -1542,6 +1682,16 @@ components:
                   type: integer
                   unit: seconds
                   display_unit: minutes_seconds
+            tag_groups:
+              - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                name: Seizure Type
+                tags:
+                  - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                    name: Tonic-Clonic Seizure
+                  - id: 86efba48-0c19-4117-822a-8675f31fba82
+                    name: Tonic Seizure
+                  - id: 86efba48-0c19-4117-822a-8675f31fba82
+                    name: Clonic Seizure
         meta:
           current_page: 1
           next_page: null
@@ -1565,37 +1715,86 @@ components:
           measurements:
             - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
               measurement_type: unit
-              name: Duration of seizure
+              name: Duration of Seizure
               config:
+                min: 0
                 type: integer
                 unit: seconds
-                display_unit: minutes_seconds
+          tag_groups:
+            - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+              client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+              name: Seizure Type
+              tags:
+                - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+                  name: Tonic-Clonic Seizure
+                - id: 86efba48-0c19-4117-822a-8675f31fba82
+                  name: Tonic Seizure
+                - id: 86efba48-0c19-4117-822a-8675f31fba82
+                  name: Clonic Seizure
     GetLogsExample:
       value:
         data:
           - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
             client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
-            topic_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-            patient_id: 38734022-af86-473c-8a9a-be7671c9c1fc
-            logged_by_id: 8e0f94c5-
             status: processed
-            time_of_observation: 1712270287
+            log_datetime: 1712270287
+            timezone_offset: -25200
+            event_datetime: 1712270287
             input_text: "This is a log entry"
             notes: "These are notes"
             updated_at: 1712270287
             measurements:
               - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
                 measurement_type: unit
-                name: Duration of seizure
+                name: Duration of Seizure
                 value: 30
                 config:
+                  min: 0
                   type: integer
                   unit: seconds
-                  display_unit: minutes_seconds
             tags:
               - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-                tag_type: category
-                name: Tonic-Clonic
+                client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+                name: Tonic-Clonic Seizure
+            topic:
+              id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+              client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+              name: Seizure
+              description: Seizure observations
+              updated_at: 1712270287
+              icon:
+                style: text
+                palette_swatch: red
+                value_text: example_value_text
+                value_emoji: example_value_emoji
+                value_sf_symbol: example_value_sf_symbol
+            patient:
+              id: 38734022-af86-473c-8a9a-be7671c9c1fc
+              client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+              first_name: Jessica
+              last_name: White
+              nickname: JW
+              updated_at: 1712270287
+              icon:
+                style: text
+                palette_swatch: red
+                value_text: example_value_text
+                value_emoji: example_value_emoji
+                value_sf_symbol: example_value_sf_symbol
+            logged_by:
+              id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+              client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+              first_name: Jack
+              last_name: Black
+              nickname: JB
+              relation: caregiver
+              updated_at: 1712270288
+              icon:
+                style: text
+                palette_swatch: mint
+                value_text: example_value_text
+                value_emoji: example_value_emoji
+                value_sf_symbol: example_value_sf_symbol
         meta:
           current_page: 1
           next_page: null
@@ -1607,26 +1806,63 @@ components:
         data:
           id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
           client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
-          topic_id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-          patient_id: 38734022-af86-473c-8a9a-be7671c9c1fc
-          logged_by_id: 8e0f94c5-
           status: processed
-          time_of_observation: 1712270287
+          log_datetime: 1712270287
+          timezone_offset: -25200
+          event_datetime: 1712270287
           input_text: "This is a log entry"
           notes: "These are notes"
           updated_at: 1712270287
           measurements:
             - id: c737234a-57f2-4cd5-8ab0-6d861e569aed
               measurement_type: unit
-              name: Duration of seizure
+              name: Duration of Seizure
               value: 30
               config:
+                min: 0
                 type: integer
                 unit: seconds
-                display_unit: minutes_seconds
           tags:
             - id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
-              tag_type: category
-              name: Tonic-Clonic
+              name: Tonic-Clonic Seizure
+          topic:
+            id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+            name: Seizure
+            description: Seizure observations
+            updated_at: 1712270287
+            icon:
+              style: text
+              palette_swatch: red
+              value_text: example_value_text
+              value_emoji: example_value_emoji
+              value_sf_symbol: example_value_sf_symbol
+          patient:
+            id: 38734022-af86-473c-8a9a-be7671c9c1fc
+            client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+            first_name: Jessica
+            last_name: White
+            nickname: JW
+            updated_at: 1712270287
+            icon:
+              style: text
+              palette_swatch: red
+              value_text: example_value_text
+              value_emoji: example_value_emoji
+              value_sf_symbol: example_value_sf_symbol
+          logged_by:
+            id: 8e0f94c5-98af-40eb-a162-4a45893fefb7
+            client_id: 5fe55fb7-e69f-49bf-b977-9045e6c63a0c
+            first_name: Jack
+            last_name: Black
+            nickname: JB
+            relation: caregiver
+            updated_at: 1712270288
+            icon:
+              style: text
+              palette_swatch: mint
+              value_text: example_value_text
+              value_emoji: example_value_emoji
+              value_sf_symbol: example_value_sf_symbol
 security:
   - bearerAuth: []
